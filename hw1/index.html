@@ -28,7 +28,7 @@
 	<body>
 		<div class="container">
 		<h1>CS184/284A Spring 2025 Homework 1 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+		<div style="text-align: center;">Name: Kyle Cheng</div>
 
 		<br>
 
@@ -38,11 +38,6 @@
 
 		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
 
-		<figure>
-			<img src="lion.jpg" alt="Lion" style="width:50%"/>
-			<figcaption>You can add images with captions!</figcaption>
-		</figure>
-
 		<!--
 		We've already added one heading per task, to make your write-up as navigable when grading. Please fit your write-up within these sections!
 		-->
@@ -51,62 +46,93 @@
 		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+                <p>Given 3 points and a color, I am to color in pixels if they fall within the triangle formed by the 3 points. I rasterized the triangles by first finding the boundaries of the box. I found the smallest and largest of each x and y value. I needed to floor and ceil to account for decimal values as I wanted to loop and deal with integer pixels. When I filled in every point in the box it worked, but next I needed to calculate whether the point was in the triangle or not. We derived a formula for this during lecture so I basically implemented it into the code.</p>
+                <p>My algorithm is no worse than an algorithm that checks each sample within the bounding box of the triangle. It properly calculates the bounding box, and checks every single pixel in the box, because many of the triangles in it need to be assigned a color.  It iterates through every integer pixel, and we use 0.5 as the buffer.</p>
+
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/test4.png" width="400px"/>
+				  <figcaption>/basic/test4.svg</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/test4_zoom.png" width="400px"/>
+				  <figcaption>Zoomed portion of test4.svg</figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
 		
 		<h2>Task 2: Antialiasing by Supersampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p> Supersampling involves taking sampling a box of shapes around our point, and then averaging the color/weight to assign it to our current point. We rasterize at a high resolution and then downscale it to a lower resolution. Supersampling reduces jaggies, and gives a better rasterization result. I took my code from Task 1 and made some modifications. First I had to account for a sample rate. Inside each original "box", I need to do more mini boxes, which is determined by the sample rate. This in turn affects all the formulas I previously used, such as the inside/outside formula. I also can't just fill in the box with a single color. I need to average out the colors sampled from the mini supersampled samples. And then assign that color to this pixel. We use the sample_buffer instead of the framebuffer, and need to assign memory size to it which depends on our sample rate. We also need to clear it after each draw and dynamically resize it. I also had to changes some of the smaller functions such as resolve_to_framebuffer. The result is much better rasterization and successful antialiasing.
+                <p>The images below show the differences between the sample rates. The differences are observed because a higher sampling rate results in a smoother image and less sharp jaggies. The blank spots are replaced with blurrier colors for a better rasterization experience.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/test4.png" width="400px"/>
+				  <figcaption>Default</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/task2_sample1.png" width="400px"/>
+				  <figcaption>Sample rate of 1</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/task2_sample4.png" width="400px"/>
+				  <figcaption>Sample rate of 4</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/task2_sample9.png" width="400px"/>
+				  <figcaption>Sample rate of 9</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 
 		<h2>Task 3: Transforms</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p>I made jacked Barney. I rotated the triangles that make up his biceps and turned his forearms up. Barney the dinosaur is jacked.</p>
+		<figure>
+			<img src="images/barney.png" alt="Barney" style="width:80%"/>
+			<figcaption>Jacked Barney</figcaption>
+		</figure>
 
 		<h2>Task 4: Barycentric coordinates</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+                Barycentric coordinates are another way of representing triangles. When we have a test point, we can view it as \((x, y)\). However, we can also view it as \((\alpha, \beta, \gamma)\). Through the simple barycentric coordinate system formula, we can easily find out if the point is in the triangle. Each value represents how far it is from the point. Here is an image showing that when we are close to only one corner, the color is stronger. When it is in the middle of the triangle, the combined color is a linear combination of the rest.
+		<figure>
+			<img src="images/triangle.png" alt="triangle" style="width:20%"/>
+			<figcaption>Triangle</figcaption>
+		</figure>
+		<figure>
+			<img src="images/wheel.png" alt="wheel" style="width:30%"/>
+			<figcaption>Wheel</figcaption>
+		</figure>
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p> Pixel sampling is where you sample against a texture mapping to figure out what color to assign to a pixel. In the code, we are given a texture tex. If we sample this tex, we will know what to assign to our pixel. Nearest pixel sampling method is where you just pick the nearest texture and assign it to our pixel. This method is cheap but doesn't give the best results. The Bilinear method is a bit more complicated, where you average the 4 closest texture pixels and assign it to our pixel. This result is more expensive but allows for better visual results.
+                <p>There will be the largest difference between the two methods when the image is complex and has many different colors. If you try to just use nearest pixel sampling, you will loose out on a lot of valuable data. But if you use bilinear filtering, then the minor intricacies of the image will be captured and better preserved.</p>
+                <p>Check out the svg files in the svg/texmap/ directory. Use the pixel inspector to find a good example of where bilinear sampling clearly defeats nearest sampling. Show and compare four png screenshots using nearest sampling at 1 sample per pixel, nearest sampling at 16 samples per pixel, bilinear sampling at 1 sample per pixel, and bilinear sampling at 16 samples per pixel.</p>
+                I couldn't do the texture part but I got the shape to appear.
+                <figure>
+                        <img src="images/pink.png" alt="pink" style="width:20%"/>
+                        <figcaption>Pink</figcaption>
+                </figure>
 
 		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p> Level sampling is where you have different versions of the same image but sampled at different rates. Depending on how big or detailed we need it, we can display the proper image. I implemented it by having different levels and picking the respective level.
+                <p>Stronger pixel sampling methods such as bilinear instead of nearest decreases speed, increases needed memory, and improves antialiasing.</p>
+                <p>Higher level sampling decreases speed, increases the memory, and improves antialiasing.</p>
+                <p>More samples per pixel also decreases speed, increasing required memory, and improves antialiasting.</p>
 
 		<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
+
+                    <figure>
+                            <img src="images/pink.png" alt="pink" style="width:20%"/>
+                            <figcaption>Pink</figcaption>
+                    </figure>
 		</div>
 	</body>
 </html>
