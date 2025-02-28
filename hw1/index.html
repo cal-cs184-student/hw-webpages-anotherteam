@@ -32,18 +32,17 @@
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-		
+		Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-anotherteam/hw1/index.html">https://cal-cs184-student.github.io/hw-webpages-anotherteam/hw1/index.html</a>
 		<br>
 
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw1-my-new-team">https://github.com/cal-cs184-student/sp25-hw1-my-new-team</a>
 
 		<!--
 		We've already added one heading per task, to make your write-up as navigable when grading. Please fit your write-up within these sections!
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+                This homework allowed me to implement many of the algorithms and ideas we learned in lecture. It was really cool to see formulas turn from theoretically proven to working out perfectly in the images. It was really fun.
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
 
@@ -113,7 +112,6 @@
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
                 <p> Pixel sampling is where you sample against a texture mapping to figure out what color to assign to a pixel. In the code, we are given a texture tex. If we sample this tex, we will know what to assign to our pixel. Nearest pixel sampling method is where you just pick the nearest texture and assign it to our pixel. This method is cheap but doesn't give the best results. The Bilinear method is a bit more complicated, where you average the 4 closest texture pixels and assign it to our pixel. This result is more expensive but allows for better visual results.
                 <p>There will be the largest difference between the two methods when the image is complex and has many different colors. If you try to just use nearest pixel sampling, you will loose out on a lot of valuable data. But if you use bilinear filtering, then the minor intricacies of the image will be captured and better preserved.</p>
-                <p>Check out the svg files in the svg/texmap/ directory. Use the pixel inspector to find a good example of where bilinear sampling clearly defeats nearest sampling. Show and compare four png screenshots using nearest sampling at 1 sample per pixel, nearest sampling at 16 samples per pixel, bilinear sampling at 1 sample per pixel, and bilinear sampling at 16 samples per pixel.</p>
                 I couldn't do the texture part but I got the shape to appear.
                 <figure>
                         <img src="images/pink.png" alt="pink" style="width:20%"/>
