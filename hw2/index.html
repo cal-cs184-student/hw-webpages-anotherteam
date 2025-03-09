@@ -28,15 +28,15 @@
 	<body>
 		<div class="container">
 		<h1>CS184/284A Spring 2025 Homework 2 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+		<div style="text-align: center;">Name: Kyle Cheng</div>
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+                Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-anotherteam/hw2/index.html">https://cal-cs184-student.github.io/hw-webpages-anotherteam/hw2/index.html</a>
 
 		<br>
 		
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw2-my-new-team-1">https://github.com/cal-cs184-student/sp25-hw2-my-new-team-1</a>
 
 		<figure>
 			<img src="teapot.png" alt="Teapot" style="width:50%"/>
@@ -48,69 +48,138 @@
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+                This homework deals with drawing images using concepts such as bezier curves. It also invovles edge splitting and flipping to improve image quality. I learned a lot and it was fun implementing concepts we learned from lecture into real hands on images.
 
 		<h2>Section I: Bezier Curves and Surfaces</h2>
 
 		<h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p>Bezier curves are defined by a certain number of points. The de Casteljau's algorithm recursively calculates the curve using interpolation. In the code, I am given the list of points. We have the given formula from the spec so I just implemented it. I was initially worried that there was no `t` but the spec says that it is a member variable of the BezierCurve class so it is available in our function scope.</p>
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/task1/a.png" width="400px"/>
+				  <figcaption>6 points.</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/task1/b.png" width="400px"/>
+				  <figcaption>curve</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/task1/c.png" width="400px"/>
+				  <figcaption>step</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/task1/d.png" width="400px"/>
+				  <figcaption>step</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/task1/e.png" width="400px"/>
+				  <figcaption>step</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/task1/f.png" width="400px"/>
+				  <figcaption>step</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/task1/g.png" width="400px"/>
+				  <figcaption>final step</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/task1/h.png" width="400px"/>
+				  <figcaption>moved points and changed t</figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
 
 		<h3>Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p>The de Casteljau algorithm extends to Bezier surfaces. You basically run 2d on each row (u) and then run it once on the other direction (v). We expand the code into three functions for better readability and practice. evaluateStep does the same thing as in part 1 but with 3d vector instead of 2d. evaluate1d calls evaluatestep on our points until we are left with a single point in the arraylist. evaluate is like the caller function, it evaluates1d with u as t iteratively. We finally end with one evaluation with t=v.</p>
+
+		<figure>
+			<img src="images/task2/a.png" alt="Teapot" style="width:50%"/>
+			<figcaption>teapot.bez</figcaption>
+		</figure>
 
 		<h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
+
 		<h3>Part 3: Area-weighted vertex normals</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+                <p>Briefly explain how you implemented the area-weighted vertex normals.</p>
+                <p>To implement area-weighted vertex normals, I loop through the faces. For each face, calculate the normal by cross products. We add this to a a sum and finally return the normalized form of this vector as our answer.
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/task3/a.png" width="400px"/>
+				  <figcaption>default</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/task3/b.png" width="400px"/>
+				  <figcaption>phong</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 		<h3>Part 4: Edge flip</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+                <p>Briefly explain how you implemented the edge flip operation and describe any interesting implementation / debugging tricks you have used.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/task4/b.png" width="400px"/>
+				  <figcaption>default</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/task4/c.png" width="400px"/>
+				  <figcaption>after some flips</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+                <p>Eventful debugging journey: my initial code was flipping edges but would output the mesh as dark. I couldn't figure out why. Turns out I was assigning some pointers wrong.
+		<figure>
+			<img src="images/task4/a.png" alt="Teapot" style="width:50%"/>
+			<figcaption>bad flips</figcaption>
+		</figure>
 		<h3>Part 5: Edge split</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p>Briefly explain how you implemented the edge split operation and describe any interesting implementation / debugging tricks you have used.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/task5/default.png" width="400px"/>
+				  <figcaption>before</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/task5/a.png" width="400px"/>
+				  <figcaption>after some splits</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/task5/default.png" width="400px"/>
+				  <figcaption>before</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/task5/b.png" width="400px"/>
+				  <figcaption>after some splits and flips</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+                <p>Write about your eventful debugging journey, if you have experienced one.</p>
+                <p>If you have implemented support for boundary edges, show screenshots of your implementation properly handling split operations on boundary edges.</p>
 
 		<h3>Part 6: Loop subdivision for mesh upsampling</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                None.
 
-		<h2>(Optional) Section III: Potential Extra Credit - Art Competition: Model something Creative</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
-		</div>
 	</body>
 </html>
