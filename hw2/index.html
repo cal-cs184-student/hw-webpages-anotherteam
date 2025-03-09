@@ -128,7 +128,7 @@
 			</table>
 		</div>
 		<h3>Part 4: Edge flip</h3>
-                <p>Briefly explain how you implemented the edge flip operation and describe any interesting implementation / debugging tricks you have used.</p>
+                <p>Implementing edge flips means you want to swap the edges assigned to vertices. The implementation involved a lot of vertex reassignments. You first check for boundary edges and don't do anything if it is a boundary. Each vertex has its half edge and twin and we have a fixed amount of nodes we have to keep track at a time. Debugging involved a lot of typos because the variables were named similarly and one off digit meant another variable.
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
@@ -143,13 +143,13 @@
 			  </tr>
 			</table>
 		</div>
-                <p>Eventful debugging journey: my initial code was flipping edges but would output the mesh as dark. I couldn't figure out why. Turns out I was assigning some pointers wrong.
+                <p>Another eventful debugging journey: my initial code was flipping edges but would output the mesh as dark. I couldn't figure out why. Turns out I was assigning some pointers wrong.
 		<figure>
 			<img src="images/task4/a.png" alt="Teapot" style="width:50%"/>
 			<figcaption>bad flips</figcaption>
 		</figure>
 		<h3>Part 5: Edge split</h3>
-                <p>Briefly explain how you implemented the edge split operation and describe any interesting implementation / debugging tricks you have used.</p>
+                <p>Edge splitting involves inserting vertices in between edges. The original edge remains but now has to be reassigned to the new vertices. We also have to create new edges from the empty vertices to our new vertex. Same debugging journey as before, typos and concise variable namesmake debugging difficult, and means one has a lot of stuff to keep track of.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
@@ -174,8 +174,6 @@
 			  </tr>
 			</table>
 		</div>
-                <p>Write about your eventful debugging journey, if you have experienced one.</p>
-                <p>If you have implemented support for boundary edges, show screenshots of your implementation properly handling split operations on boundary edges.</p>
 
 		<h3>Part 6: Loop subdivision for mesh upsampling</h3>
                 None.
