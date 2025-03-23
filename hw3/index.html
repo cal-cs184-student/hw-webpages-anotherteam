@@ -28,12 +28,12 @@
 	<body>
 		<div class="container">
 		<h1>CS184/284A Spring 2025 Homework 3 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+		<div style="text-align: center;">Names: Kyle Cheng</div>
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+                Link to webpage: https://cal-cs184-student.github.io/hw-webpages-anotherteam/hw3/index.html
+                Link to GitHub repository: https://github.com/cal-cs184-student/sp25-hw3-me_team
 		
 		<figure>
 			<img src="cornell.png" alt="Cornell Boxes with Bunnies" style="width:70%"/>
@@ -45,62 +45,380 @@
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+                This homework focuses on raytracing. First we start with the basics of implementing intersection with rays and vectors and trigonometry. Gradually we add on more features, such as bounces and other improvements to speed up render time and improve render quality. For example, adaptive sampling and different types of lighting. It was a good application of what we learned in lecture and I learned a lot.
 
 		<h2>Part 1: Ray Generation and Scene Intersection</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+                <p>Walk through the ray generation and primitive intersection parts of the rendering pipeline.</p>
+                <p>We are given that the image coordinates range from (0,0) to (1,1). We are also given that the sensor frame ranges from (−tan(2/hFov), -tan(2/vFov) to (tan(2/hFov), tan(2/vFov)), with a z coordinate value of -1. This suggests that we need to use interpolation to map these points to one another. The spec also wants the ray to be normalized and we are given the c2w matarix so we just multiply it with our resultant vector.</p>
+                <p>To determine what color to give a pixel, we loop and perform ns_aa samples. We sum up the radiance from each sample and use the average to assign to the pixel. </p>
+                <p>Explain the triangle intersection algorithm you implemented in your own words.</p>
+                <p>The triangle intersection algorithm involves a lot of linear algebra and vectors. We can use the Moller Trumbore Algorithm discussed in lecture. We replicate the formulas presented in that lecture and use it to detemine whether the given ray intersects a given triangle. We compute two edge vectors, the determinant, and then q and u and v to see where the intersection point is, if any.</p>
+                <p>For the ray-sphere intersection, we also implement what was discussed in lecture.
+                <p>Show images with normal shading for a few small .dae files.</p>
+
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/part1/a.png" width="400px"/>
+				  <figcaption>balls</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/part1/b.png" width="400px"/>
+				  <figcaption>bunny</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/part1/c.png" width="400px"/>
+				  <figcaption>coil</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/part1/d.png" width="400px"/>
+				  <figcaption>gems</figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
 		
 		<h2>Part 2: Bounding Volume Hierarchy</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p>Walk through your BVH construction algorithm. Explain the heuristic you chose for picking the splitting point.</p>
+                <p>The BVH construction algorithm helps with computer graphics and determining whether areas of an image intersects rays. Since we are representing our BVH using binary trees, we need to split each box into left and right. I chose to split based on the counting the midpoint of the two. The bounding boxes were recursvively traversed, as we need to travel all the way down the left side and also all the way down on the right side. Recursion ended when we fail to meet a leaf size quota, so we just designate our current node as a leaf node. I also take into account how dense each side is to make a good balance. I think if I wanted to do an even better job at splitting, I could perhaps sort by centroids as mentioned or maybe if I rendered my images on instructional machines would have made it easier to render my images. Once we do so, I implemented intersection functions to determine if a given ray should intersect the BVH or not. Swapping t0 and t1 was necessary sometimes in order to make sure t0 was always smaller than t1. I messed up a lot because there were a lot of vectors to keep track of. I also ran into this really annoying bug where my cow was really holey and off-colored like swiss cheese. It turns out I forgot that c++ was pass by reference -- I was passing in pointers and should have made copies of them before passing them in, as I needed the original values for later use.</p>
+                <p>Show images with normal shading for a few large .dae files that you can only render with BVH acceleration.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part2/a.png" width="400px"/>
+				  <figcaption>max</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part2/b.png" width="400px"/>
+				  <figcaption>blob</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part2/c.png" width="400px"/>
+				  <figcaption>i forgot her name</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+                <p>Compare rendering times on a few scenes with moderately complex geometries with and without BVH acceleration. Present your results in a one-paragraph analysis.</p>
+                <p>BVH acceleration speeds up the rendering time significantly. For example, without acceleration, max planck took 99.3533s seconds to render. After BVH acceleration, max planck took 136.6627s. By implementing BVH acceleration, I am able to cut down the speed by 37%. I might have git checkout something wrong but I am pretty sure I did it right. Another example is lucy. Without acceleration, rendering lucy was impossible and took a very long time, more than what I was willing to wait. After BVH acceleration, lucy took 340.2715s on my machine. Implementing BVH acceleration was a successful and worthy improvement on our existing rendering method.</p>
 
 		<h2>Part 3: Direct Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p>Walk through both implementations of the direct lighting function.</p>
+                <p>The direct lighting function with hemisphere aims to calculate raytracing from the light source to the object directly. Not bouncing just the object. To do this, we are first given the ray and how it is intersecting our object. We do num_samples in a loop and do that many samples of the hemisphere. This is part of monte carlo. We use matrices to transform between world and object space and vice versa. We then create a new ray and see if it intersects our object(s). We use the reflection equation covered in lecture aka monte carlo estimate, to estimate the reflection of this ray. After summing up over all our samples, we finally divide by the total number of samples to normalize.</p>
+                <p>The direct lighting by importance section aims to do the same but different method. Instead of sampling uniformly, we use importance sampling which means sample with respect towards the light source. The spec describes it as sampling the lights directly. We iterate through and sample for each light source.</p>
+                <p>Show some images rendered with both implementations of the direct lighting function.</p>
+                <p>note: I am having some render issues w the machines so this is the best I can do for importance. I know importance needs to be much more higher quality.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part3/zero.png" width="400px"/>
+				  <figcaption>zero</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part3/bunny.png" width="400px"/>
+				  <figcaption>bunny hemisphere</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part3/bunny_importance_better.png" width="400px"/>
+				  <figcaption>bunny importance</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+                <p>Focus on one particular scene with at least one area light and compare the noise levels in soft shadows when rendering with 1, 4, 16, and 64 light rays (the -l flag) and with 1 sample per pixel (the -s flag) using light sampling, not uniform hemisphere sampling.</p>
+                <p>Now we will talk about light sampling and the 4 different levels of light rays. L is the number of samples per area light. We can consider the bottom of the rabbit with the shadows and complex lighting. When we start with l=1, the images is quite blurry and I can't even tell where the bunny meets the floor. Rendering was quite fast though and only took 43 seconds. At l=4, we can start to see more of the rabbit's foot where it meets the floor and also the face. It took 127 seconds. With more light rays we have a better view of the rabbit. At l=16, the image becomes even better, we can now see the image overall such as the ears and the rabbit looks distinct from the background. This took 530 seconds. Finally l=64 gives us the best quality of the 4 images. The rabit looks very cute. Overall, as we increase the number of samples per area light, the image becomes much clearer and higher quality. It seems to be a tradeoff between time/resources and quality. Or maybe the blurry effect is intentionally chosen for asthetic.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part3/bunny_1.png" width="400px"/>
+				  <figcaption>l=1</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part3/bunny_4.png" width="400px"/>
+				  <figcaption>l=4</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part3/bunny_16.png" width="400px"/>
+				  <figcaption>l=16</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part3/bunny_64.png" width="400px"/>
+				  <figcaption>l=64</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+                <p>Compare the results between uniform hemisphere sampling and lighting sampling in a one-paragraph analysis.</p>
+
+                <p>The importance method is much more efficient than the hemisphere method, as we only sample what is needed. We don't waste time checking rays that don't contribute to our image at all. So it has shorter render times. It also looks better and doesn't have the dotty images of the hemisphere, as we ensure we have almost every light ray that we need. My examples might not be the best representation because I think I rendered the hemisphere image using a much much much higher resolution and just left it on overnight (it took 10 hours?).</p>
 
 		<h2>Part 4: Global Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p>Walk through your implementation of the indirect lighting function.</p>
+                <p>So I messed up my code at some point so my renders from here on can't render the objects properly :(. But everything else works so I hope it will at least be ok for some partial credit. Indirect lighting is the lighting caused by multiple bounces and illumination caused by methods other than direct illumination from the light source. Indirect lighting is at_least_one_bounce_radiance. Our images now have reflections from the light hitting the object, and then relecting to other areas sucha s the wall. We use roulette flipping to cut off ray bouncing depending on what probability percentage we want.</p>
+    <p>Show some images rendered with global (direct and indirect) illumination. Use 1024 samples per pixel.</p>
+    - Spheres and bunny
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/example_1.png" width="400px"/>
+				  <figcaption>example</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part3/bunny.png" width="400px"/>
+				  <figcaption>example</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+    <p>Pick one scene and compare rendered views first with only direct illumination, then only indirect illumination. Use 1024 samples per pixel. (You will have to edit PathTracer::at_least_one_bounce_radiance(...) in your code to generate these views.)</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part3/bunny.png" width="400px"/>
+				  <figcaption>indirect</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part3/bunny.png" width="400px"/>
+				  <figcaption>direct</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+    <p>For CBbunny.dae, render the mth bounce of light with max_ray_depth set to 0, 1, 2, 3, 4, and 5 (the -m flag), and isAccumBounces=false. Explain in your write-up what you see for the 2nd and 3rd bounce of light, and how it contributes to the quality of the rendered image compared to rasterization. Use 1024 samples per pixel.</p>
+    <p>The 2nd bounce is present in areas such as the ceiling and the walls and the floor-to-bunny. The 3rd bounce is existing shadow increases as it is the additional bounce of the previous. More bounces create a stronger image quality overall and is more realistic.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_0.png" width="400px"/>
+				  <figcaption>0</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_1.png" width="400px"/>
+				  <figcaption>1</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_2.png" width="400px"/>
+				  <figcaption>2</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_3.png" width="400px"/>
+				  <figcaption>3</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_4.png" width="400px"/>
+				  <figcaption>4</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_5.png" width="400px"/>
+				  <figcaption>5</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+    <p>Compare rendered views of accumulated and unaccumulated bounces for CBbunny.dae with max_ray_depth set to 0, 1, 2, 3, 4, and 5 (the -m flag). Use 1024 samples per pixel.</p>
+    <p>Accumulated bounces for bunny are much more clear while unaccumulated bounces are quite pixely. Much more noise.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_0.png" width="400px"/>
+				  <figcaption>0</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_1.png" width="400px"/>
+				  <figcaption>1</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_2.png" width="400px"/>
+				  <figcaption>2</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_3.png" width="400px"/>
+				  <figcaption>3</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_4.png" width="400px"/>
+				  <figcaption>4</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_5.png" width="400px"/>
+				  <figcaption>5</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_0.png" width="400px"/>
+				  <figcaption>0</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_1.png" width="400px"/>
+				  <figcaption>1</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_2.png" width="400px"/>
+				  <figcaption>2</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_3.png" width="400px"/>
+				  <figcaption>3</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_4.png" width="400px"/>
+				  <figcaption>4</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/normal_5.png" width="400px"/>
+				  <figcaption>5</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+    <p>For CBbunny.dae, output the Russian Roulette rendering with max_ray_depth set to 0, 1, 2, 3, 4, and 100(the -m flag). Use 1024 samples per pixel.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_0.png" width="400px"/>
+				  <figcaption>0</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_1.png" width="400px"/>
+				  <figcaption>1</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_2.png" width="400px"/>
+				  <figcaption>2</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_3.png" width="400px"/>
+				  <figcaption>3</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_4.png" width="400px"/>
+				  <figcaption>4</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/bunny_5.png" width="400px"/>
+				  <figcaption>5</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+    <p>Pick one scene and compare rendered views with various sample-per-pixel rates, including at least 1, 2, 4, 8, 16, 64, and 1024. Use 4 light rays.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_1.png" width="400px"/>
+				  <figcaption>1</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_2.png" width="400px"/>
+				  <figcaption>2</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_4.png" width="400px"/>
+				  <figcaption>4</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_8.png" width="400px"/>
+				  <figcaption>8</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_16.png" width="400px"/>
+				  <figcaption>16</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_64.png" width="400px"/>
+				  <figcaption>64</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 
 		<h2>Part 5: Adaptive Sampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p>Explain adaptive sampling. Walk through your implementation of the adaptive sampling.</p>
+                Adaptive sampling is a way to reduce noise. If we can concentrate our sampling efforts on the difficult parts of the image, we can ensure all noise converges using the minimum amount of effort. To do this, we keep track of mean and standard deviation, and we are able to calculate the Interval I. If I is small, then we can safely converge depending on what our threshold is. If I is large then we need to keep sampling. Implementing this into code is just a matter of maintaining each variable and breaking when we are less than a certain threshold.</p>
+                <p>Pick two scenes and render them with at least 2048 samples per pixel. Show a good sampling rate image with clearly visible differences in sampling rate over various regions and pixels. Include both your sample rate image, which shows your how your adaptive sampling changes depending on which part of the image you are rendering, and your noise-free rendered result. Use 1 sample per light and at least 5 for max ray depth.</p>
 
-		<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_1.png" width="400px"/>
+				  <figcaption>1</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_2.png" width="400px"/>
+				  <figcaption>2</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_4.png" width="400px"/>
+				  <figcaption>4</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_8.png" width="400px"/>
+				  <figcaption>8</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_16.png" width="400px"/>
+				  <figcaption>16</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/last_64.png" width="400px"/>
+				  <figcaption>64</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 		</div>
 	</body>
 </html>
