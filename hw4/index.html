@@ -28,15 +28,15 @@
 	<body>
 		<div class="container">
 		<h1>CS184/284A Spring 2025 Homework 4 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+		<div style="text-align: center;">Names: Kyle Cheng</div>
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to webpage:  https://cal-cs184-student.github.io/hw-webpages-anotherteam/hw4/index.html
 
 		<br>
 
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to GitHub repository:  https://github.com/cal-cs184-student/sp25-hw4-me_again
 
 		<figure>
 			<img src="clothsim.png" alt="Cloth draped over sphere" style="width:70%"/>
@@ -48,51 +48,307 @@
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+                This HW involved cloth simulation. We start off by simulating the cloth. Each point mass interacts with neighboring point masses through forces such as shearing, structural and bending. Then we implement numerical integration, allowing us to simulate the cloth in free fall. We measure different parameters such as ks and density and see how it affects our cloth. Then we implement collisions with spheres and planes. This part and on involves a lot of vector math. However, the cloth also needs to collide with itself. So we add a check to make sure it doesn't clip into itself. Finally, we implement many types of shaders to improve how the cloth looks. Overall this HW was genuinely so fun and is my favorite HW of the semester. Thank you!
 
 		<h2>Part 1: Masses and springs</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+		<figure>
+			<img src="images/part1/z.png" alt="cloth wireframe" style="width:70%"/>
+			<figcaption>cloth wireframe</figcaption>
+		</figure>
+
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/part1/a.png" width="400px"/>
+				  <figcaption>my diagram</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/part1/b.png" width="400px"/>
+				  <figcaption>without any shearing constraints</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/part1/c.png" width="400px"/>
+				  <figcaption>with only shearing constraints</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="images/part1/d.png" width="400px"/>
+				  <figcaption>with all constraints</figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
 
 		<h2>Part 2: Simulation via numerical integration</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+		<h3>ks</h3>
+
+                <p>A low ks makes the cloth very flexible and flowy. It appears very light and bends much more, which makes sense as a lower ks spring constant means the material requires less force (gravity in this case) to move it.</p>
+                <p.>On the other hand, a high ks makes the cloth appear flat as it falls. A higher ks means that the same force results in less spring movement.</p>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part2/1.png" width="400px"/>
+				  <figcaption>low ks, ks=10. flowy bendy material</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part2/2.png" width="400px"/>
+				  <figcaption>high ks, ks=100,000. flat stiff material</figcaption>
+				</td>
+			  </tr>
+			</table>
+                </div>
+		<h3>density</h3>
+
+                <p>The density difference can be measured by looking at how much the material sags between the two pinned points. When the density is very low (density=1), the material barely sags and appears to have a lot of tension. On the other hand, when the density is very high (density = 100,000), the material sags a lot more between the two pined points. This makes sense because a higher density means more material and mass, increasing the gravity force.</p>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part2/3.png" width="400px"/>
+				  <figcaption>low density, density=1. no sag</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part2/4.png" width="400px"/>
+				  <figcaption>high density, density=100,000. lot of sag</figcaption>
+				</td>
+			  </tr>
+			</table>
+                </div>
+		<h3>damping</h3>
+
+                <p>Damping refers to how resistant the springs are to change in motion. So when I set a high damping (damping=1.000%), the material falls very slowly and stiffly. It doesn't bend much. On the other hand, a very low damping (damping=0%) causes the mesh to quickly fall and then flop around back and forth. The material is very susceptible to even small changes in motion. I am not sure if the units of damping is correct, I am just reading off what the simulator says.</p>
+                <p>I can't embed gifs or videos into here so here is what the mesh looks like as it falls and ripples.</p>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part2/5.png" width="400px"/>
+				  <figcaption>low damping, density=0. flowy, oscillating.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part2/6.png" width="400px"/>
+				  <figcaption>high damping, damping=1.00%. flat, stiff.</figcaption>
+				</td>
+			  </tr>
+			</table>
+                </div>
+                <h3>final resting state</h3>
+		<figure>
+			<img src="images/part2/final.png" alt="cloth wireframe" style="width:70%"/>
+                        <figcaption>pinned4.json with default parameters</figcaption>
+		</figure>
 
 		<h2>Part 3: Handling collisions with other objects</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+                <p>Describe your implementation of handling collisions with spheres and planes.</p>
+                <p>The spec made it easy to implement collisions. It is vector based, and we start by iterating through all points in the mesh. For each point mass, we calculate its distance to either the sphere's center or the plane's nearest point. If this distance is less than the radius of the sphere, then we know the point mass has entered the sphere. To get the tangent point, we can normalize this distance vector and then scale it along the radius vector to get where we should snap the point mass to. The plane is a similar process, but we use dot products and find the element of the pointmass that has exceeded the plane's surface. If we subtract this extra portion from the point mass, we snap our point mass back to the plane's surface. We also add a small offset as dictated by the spec so it is sitting on TOP of the plane, not in the plane.</p>
+                <p>Show us screenshots of your shaded cloth from scene/sphere.json in its final resting state on the sphere using the default ks = 5000 as well as with ks = 500 and ks = 50000. Describe the differences in the results.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part3/a.png" width="400px"/>
+				  <figcaption>ks = 500.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part3/b.png" width="400px"/>
+				  <figcaption>ks = 5000.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part3/c.png" width="400px"/>
+				  <figcaption>ks = 50,000.</figcaption>
+				</td>
+			  </tr>
+			</table>
+                </div>
+                <h3>flat cloth</h3>
+		<figure>
+			<img src="images/part3/flat.png" alt="flat cloth" style="width:70%"/>
+                        <figcaption>shaded cloth lying peacefully</figcaption>
+		</figure>
 
 		<h2>Part 4: Handling self-collisions</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p>Describe your implementation of handling self-collisions.</p>
+                <p>To prevent the cloth from clipping into itself, we need to implement self-collisions. Each point mass should not occupy the same space as another point mass. The brute force method to check this would be to loop through every single point mass and compare it to every other one. However, this is too inefficient. Instead, we should keep track of the region in which each point mass is in, and speed up lookups by using a hashmap. The key is a unique but deterministic float and the value is a vector list of pointers to all the pointmasses in that region. In our main simulate function, we loop over all pointmasses and apply a check to make sure it doesn't collide with any other pointmasses. We also need to make sure we don't compare a pointmass to itself.</p>
+		<figure>
+			<img src="images/part4/clip.png" alt="clipping cloth" style="width:70%"/>
+                        <figcaption>cloth without self-collision so it clips into itself</figcaption>
+		</figure>
+                <p>Show us at least 3 screenshots that document how your cloth falls and folds on itself, starting with an early, initial self-collision and ending with the cloth at a more restful state (even if it is still slightly bouncy on the ground).</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/a.png" width="400px"/>
+				  <figcaption>start</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/b.png" width="400px"/>
+				  <figcaption>next timestep</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/c.png" width="400px"/>
+				  <figcaption>next timestep</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/d.png" width="400px"/>
+				  <figcaption>end</figcaption>
+				</td>
+			  </tr>
+			</table>
+                </div>
+                <p>Vary the density as well as ks and describe with words and screenshots how they affect the behavior of the cloth as it falls on itself.</p>
+                <h3>varying density</h3>
 
-		<h2>Part 5: Shaders</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <p>A density of 1 causes the material to curl more and at a higher point in the cloth. It also becomes flatter as it hits the ground. On the other hand, a density of 10000 causes the material to curl only at the bottom. It remains curled like a burrito when it falls to the plane. This makes sense as a higher density means more material/mass, so the mesh has a stronger force being applied onto it. The low density means the force is weak and the cloth can maintain its flat shape.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/e.png" width="400px"/>
+				  <figcaption>density=1</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/f.png" width="400px"/>
+				  <figcaption>density=10000</figcaption>
+				</td>
+			  </tr>
+			</table>
+                </div>
+
+                <h3>varying ks</h3>
+
+                The behavior of varying ks appears to be inverse of varying density. I actually think it's better to show the end state of the mesh. The ks of 1 cloth curls at the bottom and then remains curled at the end state. The ks of 10000 curls earlier and then unfurls out to a flat state at the end. This makes sense because a higher ks means the material requires more force to move, so it flattens out easier. A lower ks means the material is easier influenced so it remains burrito.
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part4/g.png" width="400px"/>
+				  <figcaption>ks=1</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part4/h.png" width="400px"/>
+				  <figcaption>ks=10000</figcaption>
+				</td>
+			  </tr>
+			</table>
+                </div>
+                
+                <p>Overall changing density and ks do inverse behaviors on the surface. It's a bit more complex inside.</p>
+
+            <h2>Part 5: Shaders</h2>
+
+            <p><b>Explain in your own words what is a shader program and how vertex and fragment shaders work together to create lighting and material effects.</b></p>
+            <p>Shaders use the GPU to generate a 4d vector that improves how the object looks, such as color and textures. Vertex shaders perform on each vertex, and fragment shaders operate on each pixel. Vertex and fragment shaders work together. Vertex shader first calculates positions and normals and world transformations. It sends these info to the fragment shader, which calculates colors and textures on the image.</p>
+            <p><b>Explain the Blinn-Phong shading model in your own words. Show a screenshot of your Blinn-Phong shader outputting only the ambient component, a screen shot only outputting the diffuse component, a screen shot only outputting the specular component, and one using the entire Blinn-Phong model.</b></p>
+            <p>The Blinn-Phong shading model is combines multiple lighting effects to get the best looking visual of a scene. It is the sum of the ambient, diffuse, and specular light. Ambient light is the constant light, diffuse is the light that reflect from a rough surface, and specular is the light that shinier light that reflects off of a smoother surface. I could have made my models even shinier if I tweaked the hardcoded values more.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part5/d.png" width="400px"/>
+				  <figcaption>ambient only</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part5/e.png" width="400px"/>
+				  <figcaption>diffuse only</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part5/f.png" width="400px"/>
+				  <figcaption>specular only</figcaption>
+				</td>
+			  </tr>
+			</table>
+                </div>
+		<figure>
+			<img src="images/part5/c.png" alt="total model" style="width:70%"/>
+                        <figcaption>entire model</figcaption>
+		</figure>
+                <p><b>Show a screenshot of your texture mapping shader using your own custom texture by modifying the textures in /textures/.</b></p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part5/g.png" width="400px"/>
+                                  <figcaption>custom texture</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part5/h.png" width="400px"/>
+				  <figcaption>before gravity</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part5/i.png" width="400px"/>
+				  <figcaption>after gravity</figcaption>
+				</td>
+			  </tr>
+			</table>
+                </div>
+                <p><b>Show a screenshot of bump mapping on the cloth and on the sphere. Show a screenshot of displacement mapping on the sphere. Use the same texture for both renders. You can either provide your own texture or use one of the ones in the textures directory, BUT choose one that’s not the default texture_2.png. Compare the two approaches and resulting renders in your own words. Compare how your the two shaders react to the sphere by changing the sphere mesh’s coarseness by using -o 16 -a 16 and then -o 128 -a 128.</b></p>
+                <p>The bump amd displacement both show the same texture. But displacement has physically raised textures compared to bump so it looks even better. Increasing the mesh's coarseness causes the edges of the sphere to be more raised, such as the top of the sphere.</p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part5/j.png" width="400px"/>
+				  <figcaption>bump with texture 3 (default coarseness)</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part5/k.png" width="400px"/>
+				  <figcaption>displacement with texture 3 (default coarseness)</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part5/l.png" width="400px"/>
+				  <figcaption>bump with texture 3 (o 16 a 16)</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part5/m.png" width="400px"/>
+				  <figcaption>displacement with texture 3 (o 16 a 16)</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part5/n.png" width="400px"/>
+				  <figcaption>bump with texture 3 (o 128 a 128)</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part5/o.png" width="400px"/>
+				  <figcaption>displacement with texture 3 (o 128 a 128)</figcaption>
+				</td>
+			  </tr>
+			</table>
+                </div>
+                <p><b>Show a screenshot of your mirror shader on the cloth and on the sphere.</b></p>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/part5/a.png" width="400px"/>
+				  <figcaption>mirror before gravity</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/part5/b.png" width="400px"/>
+				  <figcaption>mirror after gravity</figcaption>
+				</td>
+			  </tr>
+			</table>
+                </div>
+                <p><b>Explain what you did in your custom shader, if you made one.</b></p>
 
 		<h2>(Optional) Part 6: Extra Credit - Additional cloth simulation features!</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                DO EXTRA CREDIT
 		
 		<h2>Additional Notes (please remove)</h2>
 		<ul>
